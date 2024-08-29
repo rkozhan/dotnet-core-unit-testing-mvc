@@ -95,5 +95,24 @@ namespace LibraryApp.Test
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(resultInvalid);
             Assert.IsType<SerializableError>(badRequestResult.Value);
         }
+
+        [Theory]
+        [InlineData("ab2bd817-98cd-4cf3-a80a-53ea0cd9c200")]
+        public void DeleteTest(string validGuid)
+        {
+            //arrange
+            var mockRepo = new Mock<IBookService>();
+            mockRepo.Setup(n => n.GetAll()).Returns(MockData.GetTestBookItems());
+            var controller = new BooksController(mockRepo.Object);
+            var itemGuid = new Guid(validGuid);
+
+            //act
+            var result = controller.Delete(itemGuid, null);
+
+            //assert
+            var actionResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Index", actionResult.ActionName);
+            Assert.Null(actionResult.ControllerName);
+        }
     }
 }
